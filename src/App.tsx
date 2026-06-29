@@ -35,7 +35,13 @@ import {
 
 function SIPERAMAL_Dashboard() {
   const { theme, toggleTheme } = useTheme();
-  const [user, setUser] = useState<Omit<User, 'password'> | null>(null);
+  const [user, setUser] = useState<Omit<User, 'password'> | null>({
+    id: 'u1',
+    username: 'admin',
+    name: 'Admin Perencanaan BPMP',
+    role: 'Admin Perencanaan',
+    team: 'All'
+  });
 
   // Core application state loaded from Express Server
   const [state, setState] = useState<AppState | null>(null);
@@ -250,7 +256,13 @@ function SIPERAMAL_Dashboard() {
   };
 
   const handleLogout = () => {
-    setUser(null);
+    setUser({
+      id: 'u1',
+      username: 'admin',
+      name: 'Admin Perencanaan BPMP',
+      role: 'Admin Perencanaan',
+      team: 'All'
+    });
     localStorage.removeItem("siperamal-user");
   };
 
