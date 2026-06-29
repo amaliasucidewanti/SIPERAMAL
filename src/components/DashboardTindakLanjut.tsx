@@ -74,10 +74,12 @@ export function DashboardTindakLanjut({ state, user, onAdd, onUpdate, onDelete }
     }
   };
 
+  const tindak_lanjut_list = state.tindak_lanjut || [];
+
   // Status counters
-  const finishedCount = state.tindak_lanjut.filter(x => x.status === "Selesai").length;
-  const processCount = state.tindak_lanjut.filter(x => x.status === "Proses").length;
-  const zeroCount = state.tindak_lanjut.filter(x => x.status === "Belum Ditindaklanjuti").length;
+  const finishedCount = tindak_lanjut_list.filter(x => x.status === "Selesai").length;
+  const processCount = tindak_lanjut_list.filter(x => x.status === "Proses").length;
+  const zeroCount = tindak_lanjut_list.filter(x => x.status === "Belum Ditindaklanjuti").length;
 
   return (
     <div className="space-y-6" id="siperamal-tindaklanjut-view">
@@ -140,7 +142,7 @@ export function DashboardTindakLanjut({ state, user, onAdd, onUpdate, onDelete }
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 text-xs">
-              {state.tindak_lanjut.map((row) => {
+              {tindak_lanjut_list.map((row) => {
                 let statusColor = "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-900/40";
                 if (row.status === "Selesai") {
                   statusColor = "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900/40";

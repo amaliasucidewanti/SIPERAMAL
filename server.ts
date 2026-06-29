@@ -530,7 +530,7 @@ async function pullAllFromSheets(state: AppState): Promise<AppState> {
 
 export const app = express();
 
-function startServer() {
+async function startServer() {
   app.use(express.json());
 
   // Serve custom static uploads folder
@@ -1022,18 +1022,16 @@ function startServer() {
 
   // Serve static files and integrate Vite configuration
   if (process.env.NODE_ENV !== "production") {
-    import("vite").then(({ createServer: createViteServer }) => {
-      createViteServer({
+    try {
+      const { createServer: createViteServer } = await import("vite");
+      const vite = await createViteServer({
         server: { middlewareMode: true },
         appType: "spa",
-      }).then((vite) => {
-        app.use(vite.middlewares);
-      }).catch((err) => {
-        console.error("Gagal memuat Vite middleware:", err);
       });
-    }).catch((err) => {
-      console.error("Gagal melakukan import dinamis Vite:", err);
-    });
+      app.use(vite.middlewares);
+    } catch (err) {
+      console.error("Gagal memuat atau melakukan import dinamis Vite:", err);
+    }
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));

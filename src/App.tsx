@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AppState, User } from "./types";
+import { INITIAL_APP_STATE } from "./db/initial_data";
 import { ThemeProvider, useTheme } from "./components/ThemeContext";
 import { LoginPage } from "./components/LoginPage";
 import { DashboardKpi } from "./components/DashboardKpi";
@@ -57,6 +58,12 @@ function SIPERAMAL_Dashboard() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [reminderAlerts, setReminderAlerts] = useState<Array<{ id: string; type: string; title: string; desc: string }>>([]);
 
+  const updateStateAndPersist = (newState: AppState) => {
+    setState(newState);
+    calculateReminders(newState);
+    localStorage.setItem("siperamal-app-state", JSON.stringify(newState));
+  };
+
   // Load state from API
   const loadData = async () => {
     try {
@@ -67,15 +74,31 @@ function SIPERAMAL_Dashboard() {
       const contentType = response.headers.get("content-type");
       if (response.ok && contentType && contentType.includes("application/json")) {
         data = await response.json();
-        setState(data);
-        calculateReminders(data);
+        updateStateAndPersist(data);
       } else {
         const text = await response.text();
         throw new Error(`Status ${response.status}: ${text.substring(0, 150)}`);
       }
     } catch (err: any) {
-      console.error("Fetch data error:", err);
-      setErrorVisible(`Koneksi gagal ke server SIPERAMAL: ${err.message || "Periksa server Anda"}`);
+      console.error("Fetch data error, loading local/fallback state:", err);
+      // Fallback to local storage
+      const localData = localStorage.getItem("siperamal-app-state");
+      if (localData) {
+        try {
+          const parsed = JSON.parse(localData);
+          setState(parsed);
+          calculateReminders(parsed);
+          setErrorVisible("Bekerja dalam Mode Lokal (Gagal sinkronisasi data dari Server, perubahan disimpan di browser).");
+        } catch (e) {
+          setState(INITIAL_APP_STATE);
+          calculateReminders(INITIAL_APP_STATE);
+          setErrorVisible("Gagal memuat data dari server. Menggunakan data bawaan (Mode Lokal).");
+        }
+      } else {
+        setState(INITIAL_APP_STATE);
+        calculateReminders(INITIAL_APP_STATE);
+        setErrorVisible("Gagal memuat data dari server. Menggunakan data bawaan (Mode Lokal).");
+      }
     } finally {
       setLoading(false);
     }
@@ -135,7 +158,7 @@ function SIPERAMAL_Dashboard() {
     setReminderAlerts(alerts);
   };
 
-  // Handlers for data CRUD calling the express APIs
+  // Handlers for data CRUD calling the express APIs with client-side fallback
   const handleAddRecord = async (module: string, record: any) => {
     try {
       const response = await fetch(`/api/data/${module}`, {
@@ -145,11 +168,17 @@ function SIPERAMAL_Dashboard() {
       });
       if (response.ok) {
         const resData = await response.json();
-        setState(resData.state);
-        calculateReminders(resData.state);
+        updateStateAndPersist(resData.state);
+      } else {
+        throw new Error("HTTP error");
       }
     } catch (err) {
-      alert("Gagal menambahkan baris baru ke server.");
+      console.warn("Server failed, adding locally:", err);
+      if (!state) return;
+      const newRecord = { ...record, id: `local-${Date.now()}` };
+      const updatedModule = [...(state[module as keyof AppState] as any[]), newRecord];
+      const updatedState = { ...state, [module]: updatedModule };
+      updateStateAndPersist(updatedState);
     }
   };
 
@@ -162,11 +191,18 @@ function SIPERAMAL_Dashboard() {
       });
       if (response.ok) {
         const resData = await response.json();
-        setState(resData.state);
-        calculateReminders(resData.state);
+        updateStateAndPersist(resData.state);
+      } else {
+        throw new Error("HTTP error");
       }
     } catch (err) {
-      alert("Gagal memperbarui baris di server.");
+      console.warn("Server failed, updating locally:", err);
+      if (!state) return;
+      const updatedModule = (state[module as keyof AppState] as any[]).map((item) =>
+        item.id === id ? { ...item, ...record } : item
+      );
+      const updatedState = { ...state, [module]: updatedModule };
+      updateStateAndPersist(updatedState);
     }
   };
 
@@ -177,11 +213,16 @@ function SIPERAMAL_Dashboard() {
       });
       if (response.ok) {
         const resData = await response.json();
-        setState(resData.state);
-        calculateReminders(resData.state);
+        updateStateAndPersist(resData.state);
+      } else {
+        throw new Error("HTTP error");
       }
     } catch (err) {
-      alert("Gagal menghapus baris di server.");
+      console.warn("Server failed, deleting locally:", err);
+      if (!state) return;
+      const updatedModule = (state[module as keyof AppState] as any[]).filter((item) => item.id !== id);
+      const updatedState = { ...state, [module]: updatedModule };
+      updateStateAndPersist(updatedState);
     }
   };
 
@@ -242,11 +283,13 @@ function SIPERAMAL_Dashboard() {
       });
       if (response.ok) {
         const resData = await response.json();
-        setState(resData.state);
-        calculateReminders(resData.state);
+        updateStateAndPersist(resData.state);
+      } else {
+        throw new Error("HTTP error");
       }
     } catch (err) {
-      alert("Gagal mereset data.");
+      console.warn("Server failed, resetting locally:", err);
+      updateStateAndPersist(INITIAL_APP_STATE);
     }
   };
 
@@ -336,6 +379,21 @@ function SIPERAMAL_Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col text-slate-800 dark:text-slate-100 transition-colors duration-200">
+        
+        {errorVisible && (
+          <div className="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-semibold flex items-center justify-between shadow-md print:hidden">
+            <div className="flex items-center space-x-2">
+              <AlertOctagon className="w-4 h-4 shrink-0" />
+              <span>{errorVisible}</span>
+            </div>
+            <button 
+              onClick={() => setErrorVisible(null)}
+              className="text-slate-950 hover:bg-amber-600/30 px-2 py-1 rounded cursor-pointer font-sans text-[11px]"
+            >
+              Tutup
+            </button>
+          </div>
+        )}
         
         {/* PRINT ONLY CORNER OVERRIDES */}
         <div className="hidden print:block p-8 space-y-4">

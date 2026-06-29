@@ -21,19 +21,24 @@ interface WarRoomProps {
 
 export function WarRoom({ state }: WarRoomProps) {
   // Calculations
-  const sortedTeambye = [...state.pelaporan].sort((a,b) => b.compliance - a.compliance);
+  const pelaporan = state.pelaporan || [];
+  const program_kegiatan = state.program_kegiatan || [];
+  const risiko = state.risiko || [];
+  const ikpa = state.ikpa || [];
+
+  const sortedTeambye = [...pelaporan].sort((a,b) => b.compliance - a.compliance);
   const topPerformer = sortedTeambye[0];
 
-  const priorityPrograms = state.program_kegiatan.slice(0, 3);
-  const delayedPrograms = state.program_kegiatan.filter(x => x.status === "Terlambat");
-  const highRisks = state.risiko.filter(x => x.tingkat_risiko === "Tinggi");
+  const priorityPrograms = program_kegiatan.slice(0, 3);
+  const delayedPrograms = program_kegiatan.filter(x => x.status === "Terlambat");
+  const highRisks = risiko.filter(x => x.tingkat_risiko === "Tinggi");
 
-  const latestIkpa = state.ikpa[state.ikpa.length - 1];
+  const latestIkpa = ikpa[ikpa.length - 1];
   const realisasiAnggaran = latestIkpa ? latestIkpa.penyerapan_anggaran : 0;
   const nilaiIkpa = latestIkpa ? latestIkpa.nilai_ikpa : 0;
 
-  const avgCompliance = state.pelaporan.length > 0
-    ? state.pelaporan.reduce((acc, p) => acc + p.compliance, 0) / state.pelaporan.length
+  const avgCompliance = pelaporan.length > 0
+    ? pelaporan.reduce((acc, p) => acc + p.compliance, 0) / pelaporan.length
     : 0;
   const compliancePelaporan = Math.round(avgCompliance * 10) / 10;
 
