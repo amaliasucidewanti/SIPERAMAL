@@ -33,18 +33,51 @@ const upload = multer({ storage: multerStorage });
 
 // Helper to load application state
 function getAppState(): AppState {
+  let state: AppState;
   try {
     if (fs.existsSync(DB_FILE)) {
       const content = fs.readFileSync(DB_FILE, "utf-8");
-      return JSON.parse(content);
+      state = JSON.parse(content);
+    } else {
+      // Seed initial data if file is missing or corrupted
+      saveAppState(INITIAL_APP_STATE);
+      state = JSON.parse(JSON.stringify(INITIAL_APP_STATE));
     }
   } catch (err) {
     console.error("Error reading db file, falling back to initial data.", err);
+    state = JSON.parse(JSON.stringify(INITIAL_APP_STATE));
   }
-  
-  // Seed initial data if file is missing or corrupted
-  saveAppState(INITIAL_APP_STATE);
-  return INITIAL_APP_STATE;
+
+  // Fallback to Environment Variables for Google Sheets (highly recommended for Vercel Serverless)
+  if (!state.sheets_config) {
+    state.sheets_config = {
+      spreadsheetId: "",
+      clientEmail: "",
+      privateKey: "",
+      apiKey: "",
+      isConnected: false,
+      lastSync: ""
+    };
+  }
+
+  if (process.env.SPREADSHEET_ID) {
+    state.sheets_config.spreadsheetId = process.env.SPREADSHEET_ID;
+    state.sheets_config.isConnected = true;
+  }
+  if (process.env.GOOGLE_CLIENT_EMAIL) {
+    state.sheets_config.clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
+    state.sheets_config.isConnected = true;
+  }
+  if (process.env.GOOGLE_PRIVATE_KEY) {
+    state.sheets_config.privateKey = process.env.GOOGLE_PRIVATE_KEY;
+    state.sheets_config.isConnected = true;
+  }
+  if (process.env.GOOGLE_API_KEY) {
+    state.sheets_config.apiKey = process.env.GOOGLE_API_KEY;
+    state.sheets_config.isConnected = true;
+  }
+
+  return state;
 }
 
 // Helper to save application state
@@ -498,7 +531,7 @@ async function pullAllFromSheets(state: AppState): Promise<AppState> {
 
 export const app = express();
 
-async function startServer() {
+function startServer() {
   app.use(express.json());
 
   // Serve custom static uploads folder
@@ -990,11 +1023,14 @@ async function startServer() {
 
   // Serve static files and integrate Vite configuration
   if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
+    createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
+    }).then((vite) => {
+      app.use(vite.middlewares);
+    }).catch((err) => {
+      console.error("Gagal memuat Vite middleware:", err);
     });
-    app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));

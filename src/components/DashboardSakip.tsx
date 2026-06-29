@@ -76,7 +76,7 @@ export function DashboardSakip({ state, user, onAdd, onUpdate, onDelete }: Dashb
   // Average Achievement percentage calculation
   const totalSakipPercentage = sakip_list.length > 0
     ? sakip_list.reduce((acc, x) => acc + x.percentage, 0) / sakip_list.length
-    : 100;
+    : 0;
 
   return (
     <div className="space-y-6" id="siperamal-sakip-view">
@@ -103,7 +103,7 @@ export function DashboardSakip({ state, user, onAdd, onUpdate, onDelete }: Dashb
           <span className="text-xl font-black font-sans text-emerald-400 mt-0.5 block">
             {Math.round(totalSakipPercentage * 10) / 10}%
           </span>
-          <span className="text-[9px] text-slate-450 block font-mono">Status: SANGAT BAIK (A)</span>
+          <span className="text-[9px] text-slate-450 block font-mono">Status: {sakip_list.length > 0 ? "SANGAT BAIK (A)" : "Belum Ada Data"}</span>
         </div>
       </div>
 

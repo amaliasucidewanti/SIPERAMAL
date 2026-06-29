@@ -118,7 +118,7 @@ export function DashboardIkpa({ state, user, onAdd, onUpdate, onDelete }: Dashbo
         <div className="p-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs hover:border-slate-300 transition-colors">
           <DollarSign className="w-4 h-4 text-emerald-600 mb-1" />
           <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Realisasi Akumulatif</span>
-          <h4 className="text-lg font-black text-slate-800 dark:text-slate-100 mt-0.5">{latestIkpa ? latestIkpa.penyerapan_anggaran : 55.4}%</h4>
+          <h4 className="text-lg font-black text-slate-800 dark:text-slate-100 mt-0.5">{latestIkpa ? latestIkpa.penyerapan_anggaran : 0}%</h4>
           <span className="text-[9px] text-amber-500 font-mono block mt-0.5">Realisasi Anggaran</span>
         </div>
 

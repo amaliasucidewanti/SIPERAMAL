@@ -29,12 +29,12 @@ export function WarRoom({ state }: WarRoomProps) {
   const highRisks = state.risiko.filter(x => x.tingkat_risiko === "Tinggi");
 
   const latestIkpa = state.ikpa[state.ikpa.length - 1];
-  const realisasiAnggaran = latestIkpa ? latestIkpa.penyerapan_anggaran : 55.4;
-  const nilaiIkpa = latestIkpa ? latestIkpa.nilai_ikpa : 93.4;
+  const realisasiAnggaran = latestIkpa ? latestIkpa.penyerapan_anggaran : 0;
+  const nilaiIkpa = latestIkpa ? latestIkpa.nilai_ikpa : 0;
 
   const avgCompliance = state.pelaporan.length > 0
     ? state.pelaporan.reduce((acc, p) => acc + p.compliance, 0) / state.pelaporan.length
-    : 88.5;
+    : 0;
   const compliancePelaporan = Math.round(avgCompliance * 10) / 10;
 
   return (

@@ -165,21 +165,33 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
               <HelpCircle className="w-3.5 h-3.5 text-blue-500 mr-1.5" />
               Mode Demo Simulasi (Hak Akses Penugasan)
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-slate-500 dark:text-slate-400 leading-tight">
-              <div className="p-2 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-100 dark:border-slate-800">
-                <span className="font-bold text-slate-700 dark:text-slate-200 block">Admin Perencanaan</span>
-                User: <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800 px-1 rounded">admin</code><br />
-                Pass: <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800 px-1 rounded">admin123</code>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-slate-500 dark:text-slate-400 leading-tight">
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-100 dark:border-slate-800">
+                <span className="font-bold text-slate-700 dark:text-slate-200 block text-xs mb-1">Tim Perencanaan (Admin)</span>
+                <div className="space-y-1 font-mono text-[11px]">
+                  <div>User: <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-850 px-1 rounded">perencanaan</code></div>
+                  <div>Pass: <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-850 px-1 rounded">perencanaan123</code></div>
+                  <div className="text-[10px] text-slate-400 italic mt-1">Atau user: admin (admin123)</div>
+                </div>
               </div>
-              <div className="p-2 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-100 dark:border-slate-800">
-                <span className="font-bold text-slate-700 dark:text-slate-200 block">Ketua Tim Kerja</span>
-                User: <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800 px-1 rounded">ketua_umum</code><br />
-                Pass: <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800 px-1 rounded">umum123</code>
+
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-100 dark:border-slate-800">
+                <span className="font-bold text-slate-700 dark:text-slate-200 block text-xs mb-1">Admin Tim Kerja (Ketua)</span>
+                <div className="space-y-1 font-mono text-[10px] max-h-[110px] overflow-y-auto">
+                  <div>• <strong>Umum:</strong> admin_umum / <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-850 px-1 rounded">umum123</code></div>
+                  <div>• <strong>PAUD:</strong> admin_paud / <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-850 px-1 rounded">paud123</code></div>
+                  <div>• <strong>SD:</strong> admin_sd / <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-850 px-1 rounded">sd123</code></div>
+                  <div>• <strong>SMP:</strong> admin_smp / <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-850 px-1 rounded">smp123</code></div>
+                  <div>• <strong>SMA:</strong> admin_sma / <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-850 px-1 rounded">sma123</code></div>
+                </div>
               </div>
-              <div className="p-2 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-100 dark:border-slate-800">
-                <span className="font-bold text-slate-700 dark:text-slate-200 block">Viewer / Kepala</span>
-                User: <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800 px-1 rounded">viewer_bpmp</code><br />
-                Pass: <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800 px-1 rounded">viewer123</code>
+
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-100 dark:border-slate-800">
+                <span className="font-bold text-slate-700 dark:text-slate-200 block text-xs mb-1">Kepala BPMP (Viewer)</span>
+                <div className="space-y-1 font-mono text-[11px]">
+                  <div>User: <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-850 px-1 rounded">kepala_bpmp</code></div>
+                  <div>Pass: <code className="text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-850 px-1 rounded">bpmp123</code></div>
+                </div>
               </div>
             </div>
           </div>

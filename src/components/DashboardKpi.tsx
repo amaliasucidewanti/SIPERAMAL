@@ -25,24 +25,24 @@ export function DashboardKpi({ state }: DashboardKpiProps) {
   // 1. Capaian Kinerja percentage (average of SAKIP percentage or calculation of programs)
   const avgProgramKinerja = program_kegiatan.length > 0
     ? program_kegiatan.reduce((acc, pk) => acc + (pk.target > 0 ? (pk.realisasi / pk.target) * 150 : 0), 0) / program_kegiatan.length
-    : 85;
+    : 0;
   // Limit targetKinerja to 100% maximum fallback/calc
   const calculatedPercent = program_kegiatan.length > 0
     ? program_kegiatan.reduce((acc, pk) => acc + (pk.target > 0 ? (pk.realisasi / pk.target) * 100 : 0), 0) / program_kegiatan.length
-    : 85;
+    : 0;
   const targetKinerja = Math.round(calculatedPercent * 10) / 10;
 
   // 2. Realisasi anggaran from latest month in IKPA
   const latestIkpa = ikpa[ikpa.length - 1];
-  const realisasiAnggaran = latestIkpa ? latestIkpa.penyerapan_anggaran : 55.4;
+  const realisasiAnggaran = latestIkpa ? latestIkpa.penyerapan_anggaran : 0;
 
   // 3. Nilai IKPA
-  const nilaiIkpa = latestIkpa ? latestIkpa.nilai_ikpa : 93.4;
+  const nilaiIkpa = latestIkpa ? latestIkpa.nilai_ikpa : 0;
 
   // 4. Kepatuhan Pelaporan (average compliance of all teams)
   const avgCompliance = pelaporan.length > 0
     ? pelaporan.reduce((acc, p) => acc + p.compliance, 0) / pelaporan.length
-    : 88.5;
+    : 0;
   const compliancePelaporan = Math.round(avgCompliance * 10) / 10;
 
   // 5. count of programs
