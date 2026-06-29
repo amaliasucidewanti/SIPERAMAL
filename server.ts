@@ -1,9 +1,8 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import { createServer as createViteServer } from "vite";
-import { INITIAL_APP_STATE } from "./src/db/initial_data.js";
-import { AppState, AuditLog, User, LaporanDetail } from "./src/types.js";
+import { INITIAL_APP_STATE } from "./src/db/initial_data";
+import { AppState, AuditLog, User, LaporanDetail } from "./src/types";
 import crypto from "crypto";
 import multer from "multer";
 
@@ -1023,13 +1022,17 @@ function startServer() {
 
   // Serve static files and integrate Vite configuration
   if (process.env.NODE_ENV !== "production") {
-    createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    }).then((vite) => {
-      app.use(vite.middlewares);
+    import("vite").then(({ createServer: createViteServer }) => {
+      createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      }).then((vite) => {
+        app.use(vite.middlewares);
+      }).catch((err) => {
+        console.error("Gagal memuat Vite middleware:", err);
+      });
     }).catch((err) => {
-      console.error("Gagal memuat Vite middleware:", err);
+      console.error("Gagal melakukan import dinamis Vite:", err);
     });
   } else {
     const distPath = path.join(process.cwd(), "dist");
