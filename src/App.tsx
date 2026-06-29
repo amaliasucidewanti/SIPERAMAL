@@ -56,15 +56,20 @@ function SIPERAMAL_Dashboard() {
     try {
       setLoading(true);
       const response = await fetch("/api/data");
-      if (response.ok) {
-        const data = await response.json();
+      
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (response.ok && contentType && contentType.includes("application/json")) {
+        data = await response.json();
         setState(data);
         calculateReminders(data);
       } else {
-        setErrorVisible("Gagal sinkron data dari server.");
+        const text = await response.text();
+        throw new Error(`Status ${response.status}: ${text.substring(0, 150)}`);
       }
-    } catch (err) {
-      setErrorVisible("Koneksi gagal ke server. Periksa port 3000.");
+    } catch (err: any) {
+      console.error("Fetch data error:", err);
+      setErrorVisible(`Koneksi gagal ke server SIPERAMAL: ${err.message || "Periksa server Anda"}`);
     } finally {
       setLoading(false);
     }

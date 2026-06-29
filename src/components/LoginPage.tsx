@@ -28,15 +28,23 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(`Status ${response.status}: ${text.substring(0, 150)}`);
+      }
 
       if (response.ok && data.success) {
         onLoginSuccess(data.user);
       } else {
         setError(data.message || "Gagal masuk. Silakan coba kembali.");
       }
-    } catch (err) {
-      setError("Koneksi gagal ke server SIPERAMAL. Pastikan server aktif.");
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(`Gagal menghubungkan ke server: ${err.message || "Koneksi bermasalah atau server tidak aktif."}`);
     } finally {
       setLoading(false);
     }
