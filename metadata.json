@@ -1,0 +1,6 @@
+{
+  "name": "SIPERAMAL",
+  "description": "Sistem Informasi Perencanaan, Evaluasi, dan Pengendalian Kinerja BPMP Provinsi Maluku Utara.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
